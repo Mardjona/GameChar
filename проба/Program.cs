@@ -1,4 +1,6 @@
 ﻿
+using System.Threading.Channels;
+
 namespace проба;
 
 class GameCharacter
@@ -15,20 +17,19 @@ class GameCharacter
     public bool alive = true;
     public string Name { get { return name; } }
 
+    //Создание персонажа
     public bool InputInformation()
     {
         Console.Write("Имя персонажа: ");
         name = Console.ReadLine();
         Console.Write("Максимальное здоровье: ");
         MaxHealth = int.Parse(Console.ReadLine());
-
         Damage = MaxHealth * 0.4;
         Console.Write("Координата X: ");
         CoorX = int.Parse(Console.ReadLine());
         Console.Write("Координата Y: ");
         CoorY = int.Parse(Console.ReadLine());
         CurrentHealth = MaxHealth; // Устанавливаем текущее здоровье равным максимальному при создании персонажа
-
         Console.Write("Принадлежность к лагерю (+/-): ");
         string s = Console.ReadLine();
         if (s == "+")
@@ -47,17 +48,19 @@ class GameCharacter
 
 
     }
+    // Вывод информации о персонаже 
     private void DisplayInformation()
     {
         Console.WriteLine(" Информация о персонаже:");
         Console.WriteLine(" Имя: " + name);
         Console.WriteLine(" Максимальное здоровье: " + MaxHealth);
         Console.WriteLine(" Текущее здоровье: " + CurrentHealth);
-        Console.WriteLine(" Принадлежность к лагерю: " + (IsAlly ? "Команда 1А" : "Команда 2С"));
+        Console.WriteLine(" Принадлежность к лагерю: " + (IsAlly ? "Команда 1" : "Команда 2"));
         Console.WriteLine(" Координаты: (" + CoorX + ", " + CoorY + ")");
         Console.WriteLine(" Количество побед  " + Wins);
 
     }
+    // Метод начало игры
     private void StartGame(List<GameCharacter> persons)
     {
 
@@ -65,7 +68,7 @@ class GameCharacter
         $"  \n1.  Нанести урон " +
         $"  \n2.  Убить" +
         $"  \n3.  Переместиться" +
-        $" ");
+        $"  \n    ");
         switch (Convert.ToInt32(Console.ReadLine()))
         {
             case 1: Fight(persons); break;
@@ -75,20 +78,18 @@ class GameCharacter
 
         }
     }
-
-
-
+    //  Метод передвижения по полю 
     private void Move(List<GameCharacter> persons)
     {
-        Console.Write("Введите новую координату X: ");
+        Console.Write("\n Введите новую координату X: ");
         int x = int.Parse(Console.ReadLine());
-        Console.Write("Введите новую координату Y: ");
+        Console.Write("\n Введите новую координату Y: ");
         int y = int.Parse(Console.ReadLine());
-        int previousX = CoorX;
-        int previousY = CoorY;
+        int previousX = CoorX;   // временная переменная
+        int previousY = CoorY;   // временная переменная
         CoorX = x;
         CoorY = y;
-        Console.WriteLine($"Персонаж {name} переместился с координат {previousX},{previousY} на {CoorX},{CoorY}");
+        Console.WriteLine($"\n Персонаж {name} переместился с координат {previousX},{previousY} на {CoorX},{CoorY}");
         foreach (GameCharacter p in persons)
         {
             if (x == p.CoorX && y == p.CoorY && p!=this)
@@ -96,48 +97,41 @@ class GameCharacter
                 if (p.alive == true)
                     if (p.IsAlly != this.IsAlly)
                         Fight(persons);
-                     else
-                        Console.WriteLine("Это ваш тиммейт");
+                    else
+                        Console.WriteLine("\n Это ваш тиммейт");
 
             }
             else
             {
-                Console.WriteLine("На этих координатах никого нет");
+                Console.WriteLine("\n На этих координатах никого нет");
             }
         }
 
 
     }
+    
+    // Метод сражения 
     private void Fight(List<GameCharacter> persons)
     {
         List<GameCharacter> Team1 = new List<GameCharacter>();
         List<GameCharacter> Team2 = new List<GameCharacter>();
-        // количество игроков каждой команды и информация
-
-     
+        // количество игроков каждой команды
         foreach (GameCharacter p in persons)
         {
             if (p.IsAlly == IsAlly)
-            {
                 Team1.Add(p);
-              
-            }
             else
-            {
                 Team2.Add(p);
-                
-            }
         }
-
-        Console.WriteLine($"В команде Team1 {Team1.Count} игроков ");
-        Console.WriteLine($"В команде Team2 {Team2.Count} игроков ");
+        Console.WriteLine($" \n В команде Team1 {Team1.Count} игроков.  ");
+        Console.WriteLine($"В \n В команде Team2 {Team2.Count} игроков ");
         // Нанесение урона
         while (true)
         {
             //создание переменных урона
             double Team1Dem = 0;
             double Team2Dem = 0;
-            //суммирование урона живых членов команд
+            //суммирование урона  членов команд
             foreach (GameCharacter p in Team1)
                 Team1Dem += p.Damage;
             foreach (GameCharacter p in Team2)
@@ -147,19 +141,19 @@ class GameCharacter
             Team2Dem /= Team1.Count;
 
             //нанесение урона
-            Console.WriteLine(" Драка началась!");
+            Console.WriteLine(" ДРАКА НАЧАЛАСЬ!");
             foreach (GameCharacter p in Team1)
-            {
+            { 
                 if (CoorX == p.CoorX && CoorY == p.CoorY)
                     if (p.alive == true)
                         if (IsAlly != p.IsAlly)
                         {
                             p.CurrentHealth -= Team2Dem;
-                            Console.WriteLine($" Имя игрока {p.name} \tКоличество здоровья {p.CurrentHealth}");
+                            Console.WriteLine($"\n Имя игрока {p.name} \tКоличество его здоровья {p.CurrentHealth}");
                             if (p.CurrentHealth <= 0)
                             {
                                 p.alive = false;
-                                Console.WriteLine("Игрок" + " " + p.name + " " + "умер");
+                                Console.WriteLine("\n Игрок" + " " + p.name + " " + "умер");
                                 Wins++;
                             }
                         }
@@ -179,16 +173,15 @@ class GameCharacter
                         if (IsAlly != p.IsAlly)
                         {
                             p.CurrentHealth -= Team1Dem;
-                            Console.WriteLine($" Имя игрока {p.name} \tКоличество здоровья {p.CurrentHealth}");
+                            Console.WriteLine($"\n Имя игрока {p.name} \tКоличество здоровья {p.CurrentHealth}");
                             if (p.CurrentHealth <= 0)
                             {
                                 p.alive = false;
-                                Console.WriteLine("Игрок" + " " + p.name + " " + "умер");
+                                Console.WriteLine("\n Игрок" + " " + p.name + " " + "умер");
                                 Wins++;
                             }
                         }
             }
-
             for (int i = 0; i < Team2.Count; i++)
             {
                 if (Team2[i].alive == false)
@@ -196,42 +189,31 @@ class GameCharacter
                     Team2.Remove(Team2[i]);
                 }
             }
-
             // проверяем жив ли игрок
             if (alive == false)
             {
                 Console.WriteLine("Вы умерли и выбываете из игры ");
                 Environment.Exit(0);
             }
-            bool isTeam1Alive = false;
-            bool isEnemyTeam1Alive = false;
+            
+            bool isTeam1Alive = false; // Отсутствуют живые игроки
+            bool isTeam2Alive = false; // Отсутствуют живые игроки
 
             foreach (GameCharacter person in Team1)
-            {
                 if (person.alive && person.IsAlly == IsAlly)
                 {
                     isTeam1Alive = true;
                     break;
                 }
-            }
-
             foreach (GameCharacter person in Team1)
-            {
                 if (person.alive && person.IsAlly != IsAlly)
                 {
-                    isEnemyTeam1Alive = true;
+                    isTeam2Alive = true;
                     break;
                 }
-            }
-
-            if (isTeam1Alive == false)
-                return;
-           
-
-            if (isEnemyTeam1Alive == false)
-            {
-                return;
-            }
+            // Если живых игроков не осталось игра прекращается
+            if (isTeam1Alive == false)   return;
+            if (isTeam2Alive == false)   return;
             Console.WriteLine("Враг атакован ");
             Console.WriteLine($"Что будете делать " +
                 $"1. Продолжить атаку" +
@@ -252,7 +234,7 @@ class GameCharacter
                 ("\n--------------------\n" +
                  "Что будете делать?\n" +
                  "1. Сражаться дальше\n" +
-                 "2. Восстановить ОЗ\n" +
+                 "2. Восстановить очик здоровья\n" +
                  "3. Лечить союзников\n" +
                  "4. Применить ульт\n" +
                  "5. Бежать\n" 
@@ -263,36 +245,26 @@ class GameCharacter
                     case 2: RestoreHealth(); break;
                     case 3: Heal(persons); break;
                     case 4: Dead(Team2); break;
-                    case 5: return;
+                    case 5: Move(persons); break;
                 }
                 break;
             }
             //проверка кто победил
-
             int aliveCount = 0;
-            foreach (GameCharacter person in Team2)
+            foreach (GameCharacter p in Team2)
             {
-                if (person.alive)
-                {
+                if (p.alive)
                     aliveCount++;
-                }
             }
-
             if (aliveCount == 0)
             {
-                Console.WriteLine("На вашем счету есть победа");
+                Console.WriteLine(" Игроков не осталось ");
             }
-
-            
-            Console.WriteLine("Битва продолжается...");
+            Console.WriteLine(" Битва продолжается");
         }
-
-
-
-
-
     }
-
+     
+    //Ультимативная способность
     private void Dead(List<GameCharacter> persons)
     {
         if (Wins > 10)
@@ -301,28 +273,29 @@ class GameCharacter
                 if (CoorX == p.CoorX && CoorY == p.CoorY)
                     if (p.IsAlly != IsAlly)
                         p.alive = false;
-                Console.WriteLine($"Игрок {p.name} погиб.");
+                Console.WriteLine($"\n Игрок {p.name} погиб.");
             }
     }
+    // Самолечение 
     private void RestoreHealth()
     {
         if (Wins >= 5)
         {
-            Console.WriteLine($"Персонаж {name} использовал полное лечение.");
+            Console.WriteLine($"\n Персонаж {name} использовал полное лечение.");
             CurrentHealth = MaxHealth;
         }
         else
         {
-            Console.WriteLine("Недостаточно побед для использования полного лечения.");
+            Console.WriteLine("\n Недостаточно побед для использования полного лечения.");
         }
     }
-    private void Heal(List<GameCharacter> persons) // лечение команды 
+    // лечение команды 
+    private void Heal(List<GameCharacter> persons) 
     {
         foreach (GameCharacter p in persons)
         {
             Console.WriteLine("Введите имя товарища, которого  хотите полечить ");
             string name = Console.ReadLine();
-
             if (name == p.name && p.IsAlly == IsAlly && p.alive == alive)
             {
                 Console.WriteLine("Какое количество здоровья хотите передать?");
@@ -333,27 +306,27 @@ class GameCharacter
                     {
                         p.CurrentHealth += hp;
                         CurrentHealth -= hp;
+                        Console.WriteLine(" Вы не бросили товарища в беде");
+                        Console.WriteLine($" Ваше здоровье равно {CurrentHealth}");
                     }
                 }
                 else
-                    Console.WriteLine("Недостаточно здоровья для передачи товарищу");
+                    Console.WriteLine("\n Недостаточно здоровья для передачи товарищу");
             }
             else
-                Console.WriteLine($"Персонаж {p.name} не является союзником");
+                Console.WriteLine($"\n Персонаж {p.name} не является тиммейтом ");
 
         }
     }
-
+     //Меню
     public void Menu(List<GameCharacter> persons)
     {
-
-
+        //Проверка встречного игрока 
         foreach (GameCharacter p in persons)
             if (CoorX == p.CoorX && CoorY == p.CoorY)
                 if (p.alive == true)
                     if (IsAlly != p.IsAlly)
                         StartGame(persons);
-
         while (true)
         {
             if (persons.Count(person => person.alive == true && person.IsAlly != IsAlly) == 0 &&
@@ -363,11 +336,11 @@ class GameCharacter
             }
             else if (persons.Count(person => person.alive == true && person.IsAlly != IsAlly) == 0)
             {
-                Console.WriteLine("\nПобеда, врагов не осталось \n"); return;
+                Console.WriteLine("\n  Победу одержала КОМАНДА 1 \n"); return;
             }
             else if (persons.Count(person => person.alive == true && person.IsAlly == IsAlly) == 0)
             {
-                Console.WriteLine("\n Поражение, союзников не осталось \n"); return;
+                Console.WriteLine("\n победу одержала команда 2 \n"); return;
             }
             else
             {
