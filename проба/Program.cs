@@ -5,6 +5,7 @@ using System.Collections.Generic;
 
 public class Program
 {
+    
     public static void Main()
     {
         Console.WriteLine("Введите количество персонажей: ");
