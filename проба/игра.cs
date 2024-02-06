@@ -1,6 +1,7 @@
 ﻿namespace проба;
 class GameCharacter
 {
+    
     // Свойства класса
     private string name { get; set; }
     private int MaxHealth { get; set; }
