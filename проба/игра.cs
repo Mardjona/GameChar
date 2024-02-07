@@ -1,7 +1,6 @@
 ﻿namespace проба;
 class GameCharacter
 {
-    
     // Свойства класса
     private string name { get; set; }
     private int MaxHealth { get; set; }
@@ -14,10 +13,7 @@ class GameCharacter
     public bool alive = true;
     public string Name { get { return name; } }
 
-    public GameCharacter()
-    {
-        InputInformation();
-    }
+    public GameCharacter() { }
 
     public GameCharacter(string name, int mh, bool ia, int cx, int cy)
     {
