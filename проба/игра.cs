@@ -278,15 +278,18 @@ class GameCharacter
             if (persons.Count(person => person.alive == true && person.IsAlly != IsAlly) == 0 &&
                 persons.Count(person => person.alive == true && person.IsAlly == IsAlly) == 0)
             {
-                Console.WriteLine("\nНичья \n"); return;
+                Console.WriteLine("\nНичья \n"); 
+                Environment.Exit(0);
             }
             else if (persons.Count(person => person.alive == true && person.IsAlly != IsAlly) == 0)
             {
-                Console.WriteLine("\nПобеду одержала КОМАНДА 1 \n"); return;
+                Console.WriteLine("\nПобеду одержала КОМАНДА 1 \n"); 
+                Environment.Exit(0);
             }
             else if (persons.Count(person => person.alive == true && person.IsAlly == IsAlly) == 0)
             {
-                Console.WriteLine("\nпобеду одержала команда 2 \n"); return;
+                Console.WriteLine("\nпобеду одержала команда 2 \n"); 
+                Environment.Exit(0);
             }
             else
             {
