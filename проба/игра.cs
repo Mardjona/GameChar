@@ -12,9 +12,7 @@ class GameCharacter
     private double Damage;
     public bool alive = true;
     public string Name { get { return name; } }
-
     public GameCharacter() { }
-
     public GameCharacter(string name, int mh, bool ia, int cx, int cy)
     {
         this.name = name;
@@ -26,7 +24,6 @@ class GameCharacter
         Wins = 10;
         Damage = MaxHealth * 0.4;
     }
-
     //Создание персонажа
     public bool InputInformation()
     {
@@ -80,28 +77,55 @@ class GameCharacter
         {
             case 1: Fight(persons); break;
             case 2: Dead(persons); break;
-            case 3: Move(persons); break;
+            case 3: break;
         }
     }
     //  Метод передвижения по полю 
     private void Move(List<GameCharacter> persons)
     {
-        Console.Write("Введите новую координату X: ");
-        int x = int.Parse(Console.ReadLine());
-        Console.Write("Введите новую координату Y: ");
-        int y = int.Parse(Console.ReadLine());
-        int previousX = CoorX;   // временная переменная
-        int previousY = CoorY;   // временная переменная
-        CoorX = x;
-        CoorY = y;
-        Console.WriteLine($"Персонаж {name} переместился с координат {previousX},{previousY} на {CoorX},{CoorY}");
-        foreach (GameCharacter p in persons)
-            if (x == p.CoorX && y == p.CoorY)
-                if (p.alive == true)
-                    if (p.IsAlly != IsAlly)
-                        StartGame(persons);
-        if (alive == false) return;
-        Console.WriteLine("На этих координатах никого нет");
+        while (true)
+        {
+            Console.Write("Введите новую координату X: ");
+            int x = int.Parse(Console.ReadLine());
+            Console.Write("Введите новую координату Y: ");
+            int y = int.Parse(Console.ReadLine());
+            int previousX = CoorX; // временная переменная
+            int previousY = CoorY; // временная переменная
+            CoorX = x;
+            CoorY = y;
+            Console.WriteLine($"Персонаж {name} переместился с координат {previousX},{previousY} на {CoorX},{CoorY}");
+
+            bool isEmem = false;
+            foreach (GameCharacter p in persons)
+                if (x == p.CoorX && y == p.CoorY)
+                    if (p.alive == true)
+                        if (p.IsAlly != IsAlly)
+                            isEmem = true;
+            if (isEmem)
+            {
+                Console.Write(
+                    $"\nНа вашем пути обнаружен враг! Что собираетесь делать:" +
+                    $"\n1. Нанести урон " +
+                    $"\n2. Убить" +
+                    $"\n3. Переместиться" +
+                    $"\n>");
+                switch (Convert.ToInt32(Console.ReadLine()))
+                {
+                    case 1: Fight(persons); break;
+                    case 2: Dead(persons); break;
+                    case 3: break;
+                }
+            }
+            else
+            {
+                Console.WriteLine("На этих координатах никого нет");
+                Console.Write("Хотите продолжить движение? +/-\n" +
+                              ">");
+                if(Console.ReadLine() == "-")
+                    break;
+            }
+            if (alive == false) return;
+        }
     }
     // Метод сражения 
     private void Fight(List<GameCharacter> persons)
@@ -191,7 +215,7 @@ class GameCharacter
                     case 2: RestoreHealth(); break;
                     case 3: Heal(persons); break;
                     case 4: Dead(Team2); break;
-                    case 5: Move(persons); break;
+                    case 5: return;
                 }
                 break;
             }
@@ -261,7 +285,7 @@ class GameCharacter
                 Console.WriteLine($"\nПерсонаж {p.name} не является тиммейтом ");
         }
     }
-     //Меню
+    //Меню
     public void Menu(List<GameCharacter> persons)
     {
         //Проверка встречного игрока 
