@@ -12,7 +12,7 @@ public class Program
         {
             if (characterCount >= 2)
             {
-                List<GameCharacter> characters = new List<GameCharacter>();
+                List<GameCharacter> characters = new List<GameCharacter>(); 
                 for (int i = 0; i < characterCount; i++)
                 {
                     Console.WriteLine("Введите информацию о персонаже " + (i + 1));
@@ -21,15 +21,15 @@ public class Program
                     while (character.InputInformation() != (characterCount == a))
                         a++;
                     characters.Add(character);
-                }
+                } 
                 while (true)
                 {
                     Console.Write("Выберете персонажа: ");
                     int ans = Convert.ToInt32(Console.ReadLine());
                     Console.WriteLine("\nИгра начинается!");
-                    characters[ans].Menu(characters); // Пример вызова игры для первого персонажа
+                    characters[ans].Menu(characters); 
                 }
-            }
+            } 
             else
             {
                 Console.WriteLine("Для начала игры нужно создать минимум двух игроков!");
